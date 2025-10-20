@@ -74,30 +74,30 @@ justify-content: space-between;
   align-items: center;
   gap: 8px;
   padding: 16px 24px 0;
-  font-size: 32px;
+  font-size: 20px;
   color: #ccc;
 }
 
 .terms input {
   accent-color: white;
-  width: 40px;
-  height: 40px;
+    width: 30px;
+      height: 30px;
 }
 
 /* ===== Explore Button ===== */
 #explore {
-  width: calc(100% - 48px);
-    margin: 10px 24px 0;
-    padding: 14px;
-    font-size: 3rem;
-    border: none;
-    border-radius: 10px;
-    background: #555;
-    color: #ccc;
-    cursor: not-allowed;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    height: 145px;
+    width: calc(100% - 48px);
+      margin: 10px 24px 0;
+      padding: 14px;
+      font-size: 28px;
+      border: none;
+      border-radius: 10px;
+      background: #555;
+      color: #ccc;
+      cursor: not-allowed;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      height: 89px;
 }
 
 #explore.enabled {

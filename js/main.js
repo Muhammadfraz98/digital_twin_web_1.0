@@ -12,7 +12,7 @@ let arApp = null;
 
 document.getElementById("explore").addEventListener("click", () => {
     document.getElementById("splash").style.display = "none";
-    document.getElementById("ar-view").style.visibility = "visible";
+    document.getElementById("ar-view").style.display = "block";
 
   arApp = new OldBambergAR({
     arContainerId: "ar-view",
