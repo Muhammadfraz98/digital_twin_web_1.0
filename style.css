@@ -1,101 +1,87 @@
-/* Reset and base styles */
+
 body,
 html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background-color: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-/* Splash container */
 #splash {
     position: relative;
     width: 100%;
-    max-width: 420px;
-    /* keeps layout centered like your screenshot */
     height: 100%;
-    max-height: 900px;
     overflow: hidden;
-    border-radius: 12px;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
 }
 
-/* Top image */
 #splash img {
     width: 100%;
-    height: auto;
-    flex-shrink: 0;
-    border-radius: 12px 12px 0 0;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* Overlay (text over image) */
 .overlay {
     position: absolute;
-    bottom: 38%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 12px 20px;
-    border-radius: 8px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
     text-align: center;
 }
 
 .overlay h1 {
-    font-size: 1.3rem;
+   
+    font-size: 3rem;
     font-weight: 700;
-    color: #fff;
-    margin: 0;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+   
 }
 
-/* Terms + button area */
 .terms {
-    width: 90%;
-    text-align: left;
-    font-size: 0.85rem;
-    color: #ccc;
-    margin-top: 20px;
-}
-
-.terms input {
-    transform: scale(1.2);
-    margin-right: 8px;
-}
-
-/* Explore button */
-#explore {
-    width: 90%;
-    padding: 12px 0;
-    margin-top: 15px;
+    margin-bottom: 25px;
     font-size: 1rem;
-    font-weight: 600;
+    max-width: 80%;
+}
+
+#explore {
+    padding: 12px 30px;
+   
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
     background: #555;
     color: #fff;
     border: none;
     border-radius: 8px;
     cursor: not-allowed;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
 }
 
 #explore.enabled {
-    background: #1e90ff;
+    background: #007bff;
     cursor: pointer;
+    box-shadow: 0 6px 10px rgba(0, 123, 255, 0.4);
+/
 }
 
-/* Footer */
+#explore.enabled:hover {
+    background: #0056b3;
+    box-shadow: 0 8px 15px rgba(0, 123, 255, 0.6);
+}
+
 .footer {
-    margin-top: 25px;
-    font-size: 0.8rem;
-    color: #aaa;
-    text-align: center;
-    opacity: 0.9;
-    margin-bottom: 15px;
+    margin-top: auto;
+    font-size: 0.85rem;
+    opacity: 0.8;
 }
