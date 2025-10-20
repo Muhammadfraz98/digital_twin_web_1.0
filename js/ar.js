@@ -114,6 +114,14 @@ function render(timestamp, frame) {
 }
 
 // Back button
-document.getElementById("back-home").addEventListener("click", () => {
-  window.location.href = "index.html";
+window.addEventListener("DOMContentLoaded", () => {
+  const backBtn = document.getElementById("back-home");
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = window.location.origin + "/index.html";
+    });
+  } else {
+    console.warn("Back button not found in DOM.");
+  }
 });
