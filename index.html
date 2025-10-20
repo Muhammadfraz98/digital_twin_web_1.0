@@ -63,12 +63,13 @@
         const loader = new GLTFLoader();
 
         // Model paths must be simple filenames in this environment
-        const modelMap = {
-          mask1: "./2d/alteRathaus_mask.png",
-          mask2: "./2d/fileman_mask.png",
-          mask3: "./2d/olymp_mask.png",
-          mask4: "./2d/bohnlein_mask.png",
-        };
+         const TEST_MODEL_URL = "https://model-viewer.glitch.me/assets/Lantern.gltf";
+          const modelMap = {
+            mask1: TEST_MODEL_URL,
+            mask2: TEST_MODEL_URL,
+            mask3: TEST_MODEL_URL,
+            mask4: TEST_MODEL_URL,
+          };
 
         // --- Splash Screen & Terms Logic ---
         termsCheckbox.addEventListener('change', () => {
