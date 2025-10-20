@@ -11,26 +11,17 @@
 </head>
 <body>
 
-<div id="splash">
-  <!-- Placeholder Image: Replace with your actual Bamberg image URL -->
-  <img id="splash-bg" src="https://placehold.co/1200x800/222222/cccccc?text=Bamberg+Cityscape"
-    alt="Bamberg Background" />
-  <div class="overlay">
-    <h1 class="text-4xl sm:text-5xl font-extrabold mb-8">
-      Bamberg AR Heritage Explorer
-    </h1>
-    <p class="text-lg mb-10 max-w-lg">
-      Experience the historical architecture of Bamberg by placing digital masks and models in the real world using
-      Augmented Reality.
-    </p>
-    <button id="explore-button">
-      Explore Bamberg
-    </button>
-    <footer class="mt-auto opacity-70 text-sm">
-      Requires a device that supports WebXR/AR.
-    </footer>
+  <div id="splash">
+        <img src="./2d/bamberg_splash.jpg" alt="Old Bamberg">
+        <div class="overlay">
+            <h1>See the AR view of Old Bamberg</h1>
+            <div class="terms">
+                <input type="checkbox" id="terms">
+                <label for="terms">By checking this you accept our terms & conditions.</label>
+            </div>
+            <button id="explore" disabled>Explore Bamberg</button>
+            <p class="footer">© 2025 Uni-Bamberg AR</p>
   </div>
-</div>
 
   </div>
   <div id="ar-view">

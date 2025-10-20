@@ -2,94 +2,94 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.m
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
 import { ARButton } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/webxr/ARButton.js";
 
-        let camera, scene, renderer;
-        let controller, reticle;
-        let hitTestSource = null; 
-        let selectedModelUrl = null;
+    let camera, scene, renderer;
+    let controller, reticle;
+    let hitTestSource = null; 
+    let selectedModelUrl = null;
 
-        const statusMessage = document.getElementById("status-message");
+    const statusMessage = document.getElementById("status-message");
 
-        // IMPORTANT: Model paths must be correct relative to your server root.
-        const modelMap = {
-            mask1: "../3d/alteRathaus.glb",
-            mask2: "../3d/fileman.glb",
-            mask3: "../3d/olymp.glb",
-            mask4: "../3d/bohnlein.glb",
-        };
+    // IMPORTANT: Model paths must be correct relative to your server root.
+    const modelMap = {
+        mask1: "../3d/alteRathaus.glb",
+        mask2: "../3d/fileman.glb",
+        mask3: "../3d/olymp.glb",
+        mask4: "../3d/bohnlein.glb",
+    };
 
-        const loader = new GLTFLoader();
+    const loader = new GLTFLoader();
         
 
-        document.getElementById('explore-button').addEventListener('click', enterARMode);
+    document.getElementById('explore-button').addEventListener('click', enterARMode);
 
-        function enterARMode() {
-            document.getElementById('splash').style.display = 'none';
-            document.getElementById('ar-view').style.visibility = 'visible';
+    function enterARMode() {
+        document.getElementById('splash').style.display = 'none';
+        document.getElementById('ar-view').style.visibility = 'visible';
             
-            init();
-            animate();
+        init();
+        animate();
             
             // Set default model selection
-            document.getElementById('mask1').click();
-        }
+        document.getElementById('mask1').click();
+    }
 
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;
-            document.getElementById('ar-view').appendChild(renderer.domElement);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    document.getElementById('ar-view').appendChild(renderer.domElement);
 
-            // Create AR button and append to the custom container
-            const arButton = ARButton.createButton(renderer, { 
-                requiredFeatures: ["hit-test"],
-                domElement: document.getElementById('ar-button-container') // Use custom container
+    // Create AR button and append to the custom container
+    const arButton = ARButton.createButton(renderer, { 
+        requiredFeatures: ["hit-test"],
+        domElement: document.getElementById('ar-button-container') // Use custom container
+    });
+    document.getElementById('ar-button-container').appendChild(arButton);
+
+    // FIX: Tie Hit-Test Setup to session events directly 
+    renderer.xr.addEventListener('sessionstart', onSessionStart);
+    renderer.xr.addEventListener('sessionend', onSessionEnd);
+
+    // Lighting
+    const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+    scene.add(light);
+
+    // Reticle (the target ring)
+    const geometry = new THREE.RingGeometry(0.05, 0.06, 32).rotateX(-Math.PI / 2);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    reticle = new THREE.Mesh(geometry, material);
+    reticle.visible = false;
+    scene.add(reticle);
+
+    // Controller (for tapping to place)
+    controller = renderer.xr.getController(0);
+    controller.addEventListener("select", onSelect);
+    scene.add(controller);
+
+    window.addEventListener("resize", onWindowResize);
+
+    // Mask selection logic (re-attached for the visible UI)
+    document.querySelectorAll(".mask").forEach((mask) => {
+        mask.addEventListener("click", (e) => {
+            document.querySelectorAll(".mask").forEach((m) => m.classList.remove("selected"));
+            e.target.classList.add("selected");
+            selectedModelUrl = modelMap[e.target.id];
+            // Use the text from the mask for better user feedback
+            statusMessage.textContent = `Selected: ${e.target.textContent.trim()}. Press 'ENTER AR' to begin.`;
             });
-            document.getElementById('ar-button-container').appendChild(arButton);
-
-            // FIX: Tie Hit-Test Setup to session events directly 
-            renderer.xr.addEventListener('sessionstart', onSessionStart);
-            renderer.xr.addEventListener('sessionend', onSessionEnd);
-
-            // Lighting
-            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-            scene.add(light);
-
-            // Reticle (the target ring)
-            const geometry = new THREE.RingGeometry(0.05, 0.06, 32).rotateX(-Math.PI / 2);
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            reticle = new THREE.Mesh(geometry, material);
-            reticle.visible = false;
-            scene.add(reticle);
-
-            // Controller (for tapping to place)
-            controller = renderer.xr.getController(0);
-            controller.addEventListener("select", onSelect);
-            scene.add(controller);
-
-            window.addEventListener("resize", onWindowResize);
-
-            // Mask selection logic (re-attached for the visible UI)
-            document.querySelectorAll(".mask").forEach((mask) => {
-                mask.addEventListener("click", (e) => {
-                    document.querySelectorAll(".mask").forEach((m) => m.classList.remove("selected"));
-                    e.target.classList.add("selected");
-                    selectedModelUrl = modelMap[e.target.id];
-                    // Use the text from the mask for better user feedback
-                    statusMessage.textContent = `Selected: ${e.target.textContent.trim()}. Press 'ENTER AR' to begin.`;
-                });
-            });
-        }
+        });
+    }
 
 
-        function onSessionStart(event) {
-            statusMessage.textContent = "AR Session Started. Looking for a surface...";
-            const session = event.target.getSession();
+    function onSessionStart(event) {
+        statusMessage.textContent = "AR Session Started. Looking for a surface...";
+        const session = event.target.getSession();
             
-            session.requestReferenceSpace("viewer")
+        session.requestReferenceSpace("viewer")
                 .then((refSpace) => {
                     return session.requestHitTestSource({ space: refSpace });
                 })
