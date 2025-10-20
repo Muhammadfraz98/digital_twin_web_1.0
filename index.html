@@ -4,22 +4,55 @@
   <meta charset="UTF-8">
   <title>Old Bamberg AR</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/webxr/ARButton.js"></script>
 </head>
 <body>
 
-  <div id="splash">
-        <img src="./2d/bamberg_splash.jpg" alt="Old Bamberg">
-        <div class="overlay">
-            <h1>See the AR view of Old Bamberg</h1>
-            <div class="terms">
-                <input type="checkbox" id="terms">
-                <label for="terms">By checking this you accept our terms & conditions.</label>
-            </div>
-            <button id="explore" disabled>Explore Bamberg</button>
-            <p class="footer">© 2025 Uni-Bamberg AR</p>
+<div id="splash">
+  <!-- Placeholder Image: Replace with your actual Bamberg image URL -->
+  <img id="splash-bg" src="https://placehold.co/1200x800/222222/cccccc?text=Bamberg+Cityscape"
+    alt="Bamberg Background" />
+  <div class="overlay">
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-8">
+      Bamberg AR Heritage Explorer
+    </h1>
+    <p class="text-lg mb-10 max-w-lg">
+      Experience the historical architecture of Bamberg by placing digital masks and models in the real world using
+      Augmented Reality.
+    </p>
+    <button id="explore-button">
+      Explore Bamberg
+    </button>
+    <footer class="mt-auto opacity-70 text-sm">
+      Requires a device that supports WebXR/AR.
+    </footer>
   </div>
+</div>
+
+  </div>
+  <div id="ar-view">
+    <!-- UI Overlay for Model Selection (Visible over the AR view) -->
+    <div id="ui-overlay" class="absolute top-0 left-0 w-full p-3 z-[999] bg-gray-900/40 backdrop-blur-sm">
+      <h2 class="text-white text-center text-sm font-semibold mb-2">Select 3D Model:</h2>
+      <div class="flex justify-center space-x-2 sm:space-x-3">
+        <div id="mask1" class="mask p-2 text-white rounded-lg cursor-pointer transition transform text-xs sm:text-sm"
+          data-url="alteRathaus.glb">Altes Rathaus</div>
+        <div id="mask2" class="mask p-2 text-white rounded-lg cursor-pointer transition transform text-xs sm:text-sm"
+          data-url="fileman.glb">Fileman</div>
+        <div id="mask3" class="mask p-2 text-white rounded-lg cursor-pointer transition transform text-xs sm:text-sm"
+          data-url="olymp.glb">Olympia</div>
+        <div id="mask4" class="mask p-2 text-white rounded-lg cursor-pointer transition transform text-xs sm:text-sm"
+          data-url="bohnlein.glb">Bohnlein</div>
+      </div>
+      <p id="status-message" class="text-center mt-3 text-yellow-300 font-medium text-sm"></p>
+    </div>
+    <!-- ARButton container is managed by the script -->
+    <div id="ar-button-container"></div>
   </div>
 
-  <script type="module" src="js/ui.js"></script>
+  <script type="module" src="js/script.js"></script>
 </body>
 </html>
