@@ -10,9 +10,10 @@ let selectedModelUrl = null;
 
 // Preload your models (mapped to mask IDs)
 const modelMap = {
-  mask1: "./models/building1.glb",
-  mask2: "./models/building2.glb",
-  mask3: "./models/church.glb",
+  mask1: "../3d/alteRathaus.glb",
+  mask2: "../3d/fileman.glb",
+  mask3: "../3d/olymp.glb",
+  mask4: "../3d/bohnlein.glb",
 };
 
 const loader = new GLTFLoader();
