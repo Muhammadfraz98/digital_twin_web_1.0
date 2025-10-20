@@ -1,12 +1,21 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
-import { ARButton } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/webxr/ARButton.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
+import { ARButton } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/webxr/ARButton.js";
 
 let camera, scene, renderer;
-let reticle, controller;
+let controller, reticle;
 let hitTestSource = null;
 let hitTestSourceRequested = false;
-let model = null;
+let selectedModelUrl = null;
+
+// Preload your models (mapped to mask IDs)
+const modelMap = {
+  mask1: "./models/building1.glb",
+  mask2: "./models/building2.glb",
+  mask3: "./models/church.glb",
+};
+
+const loader = new GLTFLoader();
 
 init();
 animate();
@@ -16,53 +25,49 @@ function init() {
   camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.xr.enabled = true;
   document.body.appendChild(renderer.domElement);
 
-  document.body.appendChild(
-    ARButton.createButton(renderer, {
-      requiredFeatures: ["hit-test"], // crucial for hit testing
-    })
-  );
+  document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ["hit-test"] }));
 
+  // Lighting
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   scene.add(light);
 
-  // Reticle (placement indicator)
-  const ringGeometry = new THREE.RingGeometry(0.08, 0.1, 32).rotateX(-Math.PI / 2);
-  const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  reticle = new THREE.Mesh(ringGeometry, ringMaterial);
+  // Reticle
+  const geometry = new THREE.RingGeometry(0.05, 0.06, 32).rotateX(-Math.PI / 2);
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  reticle = new THREE.Mesh(geometry, material);
   reticle.visible = false;
   scene.add(reticle);
 
-  // Controller for placement
+  // Controller (for tapping to place)
   controller = renderer.xr.getController(0);
   controller.addEventListener("select", onSelect);
   scene.add(controller);
 
-  // Load model now so it's ready for placement
-  const loader = new GLTFLoader();
-  loader.load(
-    "./models/bamberg_building.glb",
-    (gltf) => {
-      model = gltf.scene;
-      model.scale.set(0.2, 0.2, 0.2);
-    },
-    undefined,
-    (error) => console.error("Error loading model:", error)
-  );
-
   window.addEventListener("resize", onWindowResize);
+
+  // Mask selection logic
+  document.querySelectorAll(".mask").forEach((mask) => {
+    mask.addEventListener("click", (e) => {
+      document.querySelectorAll(".mask").forEach((m) => m.classList.remove("selected"));
+      e.target.classList.add("selected");
+      selectedModelUrl = modelMap[e.target.id];
+    });
+  });
 }
 
 function onSelect() {
-  if (reticle.visible && model) {
-    const placed = model.clone();
-    placed.position.setFromMatrixPosition(reticle.matrix);
-    scene.add(placed);
-  }
+  if (!reticle.visible || !selectedModelUrl) return;
+
+  loader.load(selectedModelUrl, (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(0.3, 0.3, 0.3);
+    model.position.setFromMatrixPosition(reticle.matrix);
+    scene.add(model);
+  });
 }
 
 function onWindowResize() {
@@ -82,11 +87,9 @@ function render(timestamp, frame) {
 
     if (!hitTestSourceRequested) {
       session.requestReferenceSpace("viewer").then((refSpace) => {
-        session
-          .requestHitTestSource({ space: refSpace })
-          .then((source) => {
-            hitTestSource = source;
-          });
+        session.requestHitTestSource({ space: refSpace }).then((source) => {
+          hitTestSource = source;
+        });
       });
 
       session.addEventListener("end", () => {
@@ -99,7 +102,7 @@ function render(timestamp, frame) {
 
     if (hitTestSource) {
       const hitTestResults = frame.getHitTestResults(hitTestSource);
-      if (hitTestResults.length) {
+      if (hitTestResults.length > 0) {
         const hit = hitTestResults[0];
         const pose = hit.getPose(referenceSpace);
         reticle.visible = true;
@@ -112,16 +115,3 @@ function render(timestamp, frame) {
 
   renderer.render(scene, camera);
 }
-
-// Back button
-window.addEventListener("DOMContentLoaded", () => {
-  const backBtn = document.getElementById("back-home");
-
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      window.location.href = window.location.origin + "/index.html";
-    });
-  } else {
-    console.warn("Back button not found in DOM.");
-  }
-});
