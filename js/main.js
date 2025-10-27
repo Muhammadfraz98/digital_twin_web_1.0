@@ -106,3 +106,10 @@ function render(timestamp, frame) {
 
     renderer.render(scene, camera);
 }
+
+document.getElementById('startAR').addEventListener('click', () => {
+    document.getElementById('startAR').style.display = 'none';
+    init();
+    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+    animate();
+});
