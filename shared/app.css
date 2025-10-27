@@ -27,7 +27,7 @@ div.demo-card {
   color: white;
 
   position: absolute;
-  bottom: 0;
+  bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
