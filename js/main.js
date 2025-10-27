@@ -1,6 +1,6 @@
-import * as THREE from './lib/three.module.js';
-import { ARButton } from './lib/ARButton.js';
-import { GLTFLoader } from './lib/GLTFLoader.js';
+import * as THREE from '../lib/three.module.js';
+import { ARButton } from '../lib/ARButton.js';
+import { GLTFLoader } from '../lib/GLTFLoader.js';
 
 let scene, camera, renderer, reticle, controller;
 let hitTestSource = null;
