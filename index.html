@@ -1,39 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Old Bamberg AR</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* tiny inline CSS so this runs out-of-the-box */
+    body {
+      margin: 0;
+      font-family: system-ui, Arial;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+    }
+
+    #splash {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 5;
+    }
+
+    #splash .panel {
+      text-align: center
+    }
+
+    #ar-view {
+      position: fixed;
+      inset: 0;
+      visibility: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+    }
+
+    .mask {
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .mask.selected {
+      outline: 2px solid #ffd;
+      background: rgba(255, 255, 255, 0.12)
+    }
+
+    #status {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 
 <body>
   <div id="splash">
-    <img src="./2d/bamberg_splash.jpg" alt="Old Bamberg">
-    <div class="overlay">
-      <h1>See the AR view of Old Bamberg</h1>
-      <div class="terms">
-        <input type="checkbox" id="terms">
-        <label for="terms">By checking this you accept our terms & conditions.</label>
-      </div>
-      <button id="explore" disabled>Explore Bamberg</button>
-      <p id="status-message"></p>
+    <div class="panel">
+      <h1>Old Bamberg AR</h1>
+      <p>Check terms and press Start to enter AR</p>
+      <label><input id="terms" type="checkbox" /> Accept terms</label><br /><br />
+      <button id="explore" disabled>Start AR</button>
     </div>
   </div>
-  
-  <div id="ar-view" style="display:none">
-    <div id="ar-button-container"></div>
-    <!-- Optional Model Selection UI -->
-    <div id="ui-overlay">
-      <div id="mask1" class="mask">Altes Rathaus</div>
-      <div id="mask2" class="mask">Fileman</div>
-      <div id="mask3" class="mask">Olympia</div>
-      <div id="mask4" class="mask">Bohnlein</div>
-    </div>
+
+  <div id="ar-view"></div>
+
+  <div id="status">Status: Idle</div>
+
+  <div id="overlay" hidden>
+    <div id="mask1" class="mask selected">Altes Rathaus</div>
+    <div id="mask2" class="mask">Fileman</div>
+    <div id="mask3" class="mask">Olympia</div>
+    <div id="mask4" class="mask">Bohnlein</div>
+    <button id="undo" class="mask">Undo</button>
+    <button id="bomb" class="mask">Bomb</button>
   </div>
 
   <script type="module" src="js/main.js"></script>
 </body>
- 
+
 </html>

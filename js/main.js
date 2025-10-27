@@ -1,34 +1,49 @@
 // js/main.js
-import { OldBambergAR } from './OldBambergAR.js';
+import { OldBambergAR } from "./OldBambergAR.js";
 
 const modelMap = {
-  mask1: "alteRathaus.glb",
-  mask2: "fileman.glb",
-  mask3: "olymp.glb",
-  mask4: "bohnlein.glb"
+  mask1: "media/models/alteRathaus.glb",
+  mask2: "media/models/fileman.glb",
+  mask3: "media/models/olymp.glb",
+  mask4: "media/models/bohnlein.glb"
 };
 
-let arApp = null;
-
-document.getElementById("explore").addEventListener("click", () => {
-    document.getElementById("splash").style.display = "none";
-    document.getElementById("ar-view").style.display = "block";
-
-  arApp = new OldBambergAR({
-    arContainerId: "ar-view",
-    buttonContainerId: "ar-button-container",
-    statusId: "status-message",
-    modelMap
-  });
-
-  // Default selected model
-  arApp.selectModel("mask1");
+// create the app instance (but do not start AR yet)
+let arApp = new OldBambergAR({
+  arContainerId: "ar-view",
+  statusId: "status",
+  modelMap
 });
 
-// Handle model selection buttons
-document.querySelectorAll(".mask").forEach(mask => {
-  mask.addEventListener("click", (e) => {
-    const key = e.target.id;
-    if (arApp) arApp.selectModel(key);
+// splash / terms
+const terms = document.getElementById("terms");
+const explore = document.getElementById("explore");
+const splash = document.getElementById("splash");
+const overlay = document.getElementById("overlay");
+const status = document.getElementById("status");
+
+terms.addEventListener("change", () => {
+  explore.disabled = !terms.checked;
+});
+
+explore.addEventListener("click", () => {
+  splash.style.display = "none";
+  document.getElementById("ar-view").style.visibility = "visible";
+  overlay.hidden = false;
+  status.textContent = "Status: Tap the ARButton to enter AR";
+  // user must press ARButton created by ARButton.js to enter immersive session
+});
+
+// model selection UI
+document.querySelectorAll(".mask").forEach(el => {
+  el.addEventListener("click", (e) => {
+    document.querySelectorAll(".mask").forEach(m => m.classList.remove("selected"));
+    e.currentTarget.classList.add("selected");
+    const id = e.currentTarget.id;
+    if (arApp) arApp.selectModel(id);
   });
 });
+
+// undo / bomb
+document.getElementById("undo").addEventListener("click", () => arApp.undoLast());
+document.getElementById("bomb").addEventListener("click", () => arApp.bomb());
