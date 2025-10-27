@@ -73,13 +73,16 @@ class App {
 
   /** Place a sunflower when the screen is tapped. */
   onSelect = () => {
-    if (window.sunflower) {
-      const clone = window.sunflower.clone();
-      clone.position.copy(this.reticle.position);
-      this.scene.add(clone)
+    let modelToPlace = window.myModel || window.sunflower; // prioritize your GLB
 
-      const shadowMesh = this.scene.children.find(c => c.name === 'shadowMesh');
-      shadowMesh.position.y = clone.position.y;
+    if (modelToPlace && this.reticle.visible) {
+        const clone = modelToPlace.clone();
+        clone.position.copy(this.reticle.position);
+        this.scene.add(clone);
+
+        // Optional: adjust shadowMesh
+        const shadowMesh = this.scene.children.find(c => c.name === 'shadowMesh');
+        if (shadowMesh) shadowMesh.position.y = clone.position.y;
     }
   }
 

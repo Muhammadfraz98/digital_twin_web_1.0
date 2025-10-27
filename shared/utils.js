@@ -15,6 +15,8 @@ class Reticle extends THREE.Object3D {
   }
 }
 
+// https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf
+
 window.gltfLoader.load("https://bambergwebar.netlify.app/3d/alteRathaus.glb", function(gltf) {
     const model = gltf.scene;
     model.traverse((child) => {
