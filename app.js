@@ -71,7 +71,7 @@ class App {
     this.xrSession.addEventListener("select", this.onSelect);
   }
 
-  /** Place a sunflower when the screen is tapped. */
+  /** Place a model when the screen is tapped. */
   onSelect = () => {
     let modelToPlace = window.myModel || window.sunflower; // prioritize your GLB
 

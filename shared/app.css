@@ -43,6 +43,8 @@ div.demo-card {
   position: relative;
   width: 100%;
   height: 29%;
+  max-width: 500px;
+  justify-self: center;
 }
 
 #splash-image img {
