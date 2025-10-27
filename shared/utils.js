@@ -15,7 +15,7 @@ class Reticle extends THREE.Object3D {
   }
 }
 
-window.gltfLoader.load("https://raw.githubusercontent.com/Muhammadfraz98/digital_twin_web_1.0/main/3d/alteRathaus.glb", function(gltf) {
+window.gltfLoader.load("https://Muhammadfraz98.github.io/digital_twin_web_1.0/3d/alteRathaus.glb", function(gltf) {
     const model = gltf.scene;
     model.traverse((child) => {
       if (child.isMesh) {
