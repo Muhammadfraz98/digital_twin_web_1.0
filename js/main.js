@@ -1,130 +1,105 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
-import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
-import { ARButton } from "../lib/ARButton.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/loaders/GLTFLoader.js";
 
-export class ARExperience {
-  constructor() {
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+let camera, scene, renderer;
+let reticle, controller;
+let model = null;
+let hitTestSource = null;
+let localSpace = null;
+let xrSession = null;
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.xr.enabled = true;
-    document.body.appendChild(this.renderer.domElement);
+const startButton = document.getElementById("startAR");
+const overlay = document.getElementById("overlay");
 
-    const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1.5);
-    this.scene.add(light);
+startButton.addEventListener("click", startAR);
 
-    // Reticle for hit test
-    this.reticle = new THREE.Mesh(
-      new THREE.RingGeometry(0.1, 0.12, 32).rotateX(-Math.PI / 2),
-      new THREE.MeshBasicMaterial({ color: 0x00ff99 })
-    );
-    this.reticle.visible = false;
-    this.scene.add(this.reticle);
-
-    // Loader for 3D models
-    this.loader = new GLTFLoader();
-
-    // Hit test
-    this.hitTestSource = null;
-    this.hitTestSourceRequested = false;
-
-    // Model placeholder
-    this.model = null;
-
-    // Controller
-    this.controller = this.renderer.xr.getController(0);
-    this.controller.addEventListener("select", this.onSelect.bind(this));
-    this.scene.add(this.controller);
-
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+async function startAR() {
+  if (!navigator.xr) {
+    overlay.textContent = "WebXR not supported on this device.";
+    return;
   }
 
-  start() {
-    const message = document.getElementById("message");
-    message.textContent = "Move your device to scan the floor...";
+  xrSession = await navigator.xr.requestSession("immersive-ar", {
+    requiredFeatures: ["hit-test", "dom-overlay"],
+    domOverlay: { root: document.body },
+  });
 
-    document.body.appendChild(
-      ARButton.createButton(this.renderer, {
-        requiredFeatures: ["hit-test"],
-      })
-    );
+  setupThree();
+  renderer.xr.setSession(xrSession);
 
-    this.renderer.setAnimationLoop(this.render.bind(this));
+  const referenceSpace = await xrSession.requestReferenceSpace("local");
+  const viewerSpace = await xrSession.requestReferenceSpace("viewer");
+  hitTestSource = await xrSession.requestHitTestSource({ space: viewerSpace });
+
+  localSpace = referenceSpace;
+
+  xrSession.addEventListener("select", onSelect);
+  renderer.setAnimationLoop(onXRFrame);
+
+  overlay.textContent = "Scan the floor to find a surface...";
+  startButton.style.display = "none";
+}
+
+function setupThree() {
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(light);
+
+  // Reticle for hit test visualization
+  const geometry = new THREE.RingGeometry(0.08, 0.1, 32).rotateX(-Math.PI / 2);
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  reticle = new THREE.Mesh(geometry, material);
+  reticle.visible = false;
+  scene.add(reticle);
+
+  controller = renderer.xr.getController(0);
+  scene.add(controller);
+}
+
+function onSelect() {
+  if (reticle.visible && model) {
+    const placed = model.clone();
+    placed.position.copy(reticle.position);
+    placed.quaternion.copy(reticle.quaternion);
+    scene.add(placed);
+  }
+}
+
+function onXRFrame(timestamp, frame) {
+  const session = frame.session;
+  const pose = frame.getViewerPose(localSpace);
+
+  if (!pose) return;
+
+  const hitTestResults = frame.getHitTestResults(hitTestSource);
+
+  if (hitTestResults.length > 0) {
+    const hit = hitTestResults[0];
+    const hitPose = hit.getPose(localSpace);
+
+    reticle.visible = true;
+    reticle.position.set(hitPose.transform.position.x, hitPose.transform.position.y, hitPose.transform.position.z);
+    reticle.updateMatrixWorld(true);
+
+    if (!model) loadModel();
+  } else {
+    reticle.visible = false;
   }
 
-  onSelect() {
-    if (!this.reticle.visible) return;
+  renderer.render(scene, camera);
+}
 
-    if (this.model) {
-      const clone = this.model.clone();
-      clone.position.setFromMatrixPosition(this.reticle.matrix);
-      this.scene.add(clone);
-    } else {
-      this.loader.load(
-        "../3d/alteRathaus.glb",
-        (gltf) => {
-          this.model = gltf.scene;
-          this.model.scale.set(0.2, 0.2, 0.2);
-          this.model.position.setFromMatrixPosition(this.reticle.matrix);
-          this.scene.add(this.model);
-          document.getElementById("message").textContent = "Model placed!";
-        },
-        undefined,
-        (err) => {
-          console.error("Error loading model:", err);
-        }
-      );
-    }
-  }
-
-  onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
-  render(timestamp, frame) {
-    const session = this.renderer.xr.getSession();
-    if (!session) return;
-
-    if (!this.hitTestSourceRequested) {
-      session.requestReferenceSpace("viewer").then((refSpace) => {
-        session.requestHitTestSource({ space: refSpace }).then((source) => {
-          this.hitTestSource = source;
-        });
-      });
-
-      session.addEventListener("end", () => {
-        this.hitTestSourceRequested = false;
-        this.hitTestSource = null;
-      });
-
-      this.hitTestSourceRequested = true;
-    }
-
-    if (frame && this.hitTestSource) {
-      const referenceSpace = this.renderer.xr.getReferenceSpace();
-      const hitTestResults = frame.getHitTestResults(this.hitTestSource);
-
-      if (hitTestResults.length > 0) {
-        const hit = hitTestResults[0];
-        const pose = hit.getPose(referenceSpace);
-
-        this.reticle.visible = true;
-        this.reticle.matrix.fromArray(pose.transform.matrix);
-
-        const msg = document.getElementById("message");
-        if (msg.textContent.includes("Move your device")) {
-          msg.textContent = "Surface found! Tap to place the model.";
-        }
-      } else {
-        this.reticle.visible = false;
-      }
-    }
-
-    this.renderer.render(this.scene, this.camera);
-  }
+function loadModel() {
+  const loader = new GLTFLoader();
+  loader.load("../3d/alteRathaus.glb", (gltf) => {
+    model = gltf.scene;
+    overlay.textContent = "Tap to place the model";
+  });
 }
