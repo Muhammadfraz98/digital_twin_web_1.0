@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
-import { ARButton } from "../lib/ARButton.js";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
+import { ARButton } from "../libs/ARButton.js";
 
 export class ARExperience {
   constructor() {
@@ -12,11 +13,10 @@ export class ARExperience {
     this.renderer.xr.enabled = true;
     document.body.appendChild(this.renderer.domElement);
 
-    // Lighting
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1.5);
     this.scene.add(light);
 
-    // Reticle setup
+    // Reticle for hit test
     this.reticle = new THREE.Mesh(
       new THREE.RingGeometry(0.1, 0.12, 32).rotateX(-Math.PI / 2),
       new THREE.MeshBasicMaterial({ color: 0x00ff99 })
@@ -24,11 +24,17 @@ export class ARExperience {
     this.reticle.visible = false;
     this.scene.add(this.reticle);
 
-    // Hit test vars
+    // Loader for 3D models
+    this.loader = new GLTFLoader();
+
+    // Hit test
     this.hitTestSource = null;
     this.hitTestSourceRequested = false;
 
-    // For placing objects
+    // Model placeholder
+    this.model = null;
+
+    // Controller
     this.controller = this.renderer.xr.getController(0);
     this.controller.addEventListener("select", this.onSelect.bind(this));
     this.scene.add(this.controller);
@@ -37,21 +43,40 @@ export class ARExperience {
   }
 
   start() {
+    const message = document.getElementById("message");
+    message.textContent = "Move your device to scan the floor...";
+
     document.body.appendChild(
       ARButton.createButton(this.renderer, {
         requiredFeatures: ["hit-test"],
       })
     );
+
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
   onSelect() {
-    if (this.reticle.visible) {
-      const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-      const material = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.setFromMatrixPosition(this.reticle.matrix);
-      this.scene.add(mesh);
+    if (!this.reticle.visible) return;
+
+    if (this.model) {
+      const clone = this.model.clone();
+      clone.position.setFromMatrixPosition(this.reticle.matrix);
+      this.scene.add(clone);
+    } else {
+      this.loader.load(
+        "../3d/alteRathaus.glb",
+        (gltf) => {
+          this.model = gltf.scene;
+          this.model.scale.set(0.2, 0.2, 0.2);
+          this.model.position.setFromMatrixPosition(this.reticle.matrix);
+          this.scene.add(this.model);
+          document.getElementById("message").textContent = "Model placed!";
+        },
+        undefined,
+        (err) => {
+          console.error("Error loading model:", err);
+        }
+      );
     }
   }
 
@@ -87,8 +112,14 @@ export class ARExperience {
       if (hitTestResults.length > 0) {
         const hit = hitTestResults[0];
         const pose = hit.getPose(referenceSpace);
+
         this.reticle.visible = true;
         this.reticle.matrix.fromArray(pose.transform.matrix);
+
+        const msg = document.getElementById("message");
+        if (msg.textContent.includes("Move your device")) {
+          msg.textContent = "Surface found! Tap to place the model.";
+        }
       } else {
         this.reticle.visible = false;
       }

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Minimal AR Hit Test</title>
+  <title>AR Hit Test Example</title>
   <style>
     body {
       margin: 0;
@@ -11,7 +11,6 @@
       font-family: monospace;
       background: #000;
       color: white;
-      text-align: center;
     }
 
     #startAR {
@@ -19,27 +18,40 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 12px 20px;
-      font-size: 16px;
+      padding: 12px 24px;
       background: #00bfa5;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
+      font-size: 16px;
       cursor: pointer;
+      z-index: 2;
+    }
+
+    #message {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
       z-index: 2;
     }
   </style>
 </head>
 
 <body>
+  <div id="message">Tap “Start AR” and scan the floor to detect a surface...</div>
   <button id="startAR">Start AR</button>
 
   <script type="module">
     import { ARExperience } from "./js/main.js";
+
     const app = new ARExperience();
-    document.getElementById("startAR").addEventListener("click", () => {
-      app.start();
-    });
+    document.getElementById("startAR").addEventListener("click", () => app.start());
   </script>
 </body>
 
