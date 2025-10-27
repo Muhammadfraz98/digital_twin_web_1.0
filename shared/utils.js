@@ -27,7 +27,6 @@ window.gltfLoader.load("https://bambergwebar.netlify.app/3d/alteRathaus.glb", fu
     });
 
     model.scale.set(0.05, 0.05, 0.05);
-
     window.myModel = model;  
   },
   undefined,
