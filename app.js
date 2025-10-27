@@ -51,6 +51,7 @@ class App {
 
   onSessionStarted = async () => {
     // Add the `ar` class to our body, which will hide our 2D components
+    document.getElementById('splash-image').style.display = 'none';
     document.body.classList.add('ar');
 
     // To help with working with 3D on the web, we'll use three.js.
