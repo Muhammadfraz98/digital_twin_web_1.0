@@ -1,99 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Old Bamberg AR</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Minimal AR Hit Test</title>
   <style>
-    /* tiny inline CSS so this runs out-of-the-box */
     body {
       margin: 0;
-      font-family: system-ui, Arial;
       overflow: hidden;
+      font-family: monospace;
       background: #000;
-      color: #fff;
+      color: white;
+      text-align: center;
     }
 
-    #splash {
+    #startAR {
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #000;
-      z-index: 5;
-    }
-
-    #splash .panel {
-      text-align: center
-    }
-
-    #ar-view {
-      position: fixed;
-      inset: 0;
-      visibility: hidden;
-    }
-
-    #overlay {
-      position: fixed;
-      left: 10px;
-      bottom: 10px;
-      z-index: 10;
-      display: flex;
-      gap: 8px;
-    }
-
-    .mask {
-      padding: 6px 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .mask.selected {
-      outline: 2px solid #ffd;
-      background: rgba(255, 255, 255, 0.12)
-    }
-
-    #status {
-      position: fixed;
-      top: 12px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #00bfa5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 2;
     }
   </style>
 </head>
 
 <body>
-  <div id="splash">
-    <div class="panel">
-      <h1>Old Bamberg AR</h1>
-      <p>Check terms and press Start to enter AR</p>
-      <label><input id="terms" type="checkbox" /> Accept terms</label><br /><br />
-      <button id="explore" disabled>Start AR</button>
-    </div>
-  </div>
+  <button id="startAR">Start AR</button>
 
-  <div id="ar-view"></div>
-
-  <div id="status">Status: Idle</div>
-
-  <div id="overlay" hidden>
-    <div id="mask1" class="mask selected">Altes Rathaus</div>
-    <div id="mask2" class="mask">Fileman</div>
-    <div id="mask3" class="mask">Olympia</div>
-    <div id="mask4" class="mask">Bohnlein</div>
-    <button id="undo" class="mask">Undo</button>
-    <button id="bomb" class="mask">Bomb</button>
-  </div>
-
-  <script type="module" src="js/main.js"></script>
+  <script type="module">
+    import { ARExperience } from "./js/main.js";
+    const app = new ARExperience();
+    document.getElementById("startAR").addEventListener("click", () => {
+      app.start();
+    });
+  </script>
 </body>
 
 </html>
