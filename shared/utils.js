@@ -36,26 +36,13 @@ async function preloadAllModels() {
 
   try {
     for (const key in urls) {
-      await new Promise((resolve, reject) => {
-        loader.load(
-          urls[key], 
-          (gltf) => {
-            const model = gltf.scene;
-            model.traverse(c => {
-              if (c.isMesh) { 
-                c.castShadow = true; 
-                c.receiveShadow = true; 
-              }
-            });
-            model.scale.set(0.05, 0.05, 0.05);
-            model.visible = false; // Hide until placed
-            window.models[key] = model;
-            resolve();
-          }, 
-          undefined, 
-          reject
-        );
-      });
+      window.models[key] = await new Promise((resolve, reject) => {
+      loader.load(urls[key], gltf => {
+        const model = gltf.scene;
+        model.scale.set(0.05, 0.05, 0.05);
+        resolve(model);
+      }, undefined, reject);
+    });
     }
     console.log("All models loaded successfully");
   } catch (error) {
