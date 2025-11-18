@@ -233,8 +233,8 @@ async function showBuildingListScreen() {
         return;
     }
 
-    // filter by distance (100m radius example)
-    const NEARBY_RADIUS = 100;
+    // filter by distance (5km radius example)
+    const NEARBY_RADIUS = 5000;
     const nearby = buildings.filter(b => 
       getDistance(lat, lon, b.lat, b.lon) <= NEARBY_RADIUS
     );
@@ -242,7 +242,6 @@ async function showBuildingListScreen() {
     showBuildings(nearby.length > 0 ? nearby : buildings);
     
     showBuildings(nearby);
-    
   }, (error) => {
       console.error("Geolocation error:", error);
       document.getElementById("user-location").innerText = "Location access denied. Showing all buildings.";
@@ -260,6 +259,11 @@ async function showBuildingListScreen() {
 function showBuildings(buildings) {
   const list = document.getElementById("building-list");
   list.innerHTML = "";
+
+  if (buildings.length === 0) {
+    list.innerHTML = "<p>No buildings available.</p>";
+    return;
+  }
 
   buildings.forEach(b => {
     const div = document.createElement("div");
