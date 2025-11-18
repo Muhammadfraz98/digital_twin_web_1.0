@@ -268,8 +268,18 @@ function showBuildings(buildings) {
   buildings.forEach(b => {
     const div = document.createElement("div");
     div.innerHTML = `
-      <strong>${b.name}</strong><br>
-      ${b.lat}, ${b.lon} 
+      <div class="building-card">
+        <div class="building-info">
+          <h3 class="building-name">${b.name}</h3>
+          <p class="building-description">${b.description}</p>
+          ${b.distance ? `<span class="building-distance">${Math.round(b.distance)}m away</span>` : ''}
+        </div>
+        <div class="building-image">
+          <img src="${b.imageUrl || './2d/placeholder.jpg'}" 
+              alt="${b.name}" 
+              onerror="this.src='./2d/placeholder.jpg'">
+        </div>
+      </div>
     `;
 
     div.addEventListener("click", () => startARForBuilding(b));
