@@ -9,6 +9,7 @@ body {
   -webkit-user-select: none;
   user-select: none;
   background-color: rgb(0 0 0);
+  color: #f5deb3;
 }
 
 div.demo-card {
@@ -137,4 +138,36 @@ body.ar.stabilized #stabilization {
   border: 1px solid #ccc;
   margin-bottom: 8px;
   border-radius: 4px;
+}
+
+
+
+.mdc-button {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.mdc-button:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.mdc-button:active {
+  background-color: #eeeeee !important;
+}
+
+.mdc-button--raised {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.mdc-button--raised:hover {
+  background-color: #f5f5f5 !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mdc-button--raised:active {
+  background-color: #eeeeee !important;
 }

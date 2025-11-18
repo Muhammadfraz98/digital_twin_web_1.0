@@ -233,8 +233,8 @@ async function showBuildingListScreen() {
         return;
     }
 
-    // filter by distance (5km radius example)
-    const NEARBY_RADIUS = 5000;
+    // filter by distance (10km radius example)
+    const NEARBY_RADIUS = 10000;
     const nearby = buildings.filter(b => 
       getDistance(lat, lon, b.lat, b.lon) <= NEARBY_RADIUS
     );
