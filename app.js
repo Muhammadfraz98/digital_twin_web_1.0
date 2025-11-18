@@ -275,9 +275,7 @@ function showBuildings(buildings) {
           ${b.distance ? `<span class="building-distance">${Math.round(b.distance)}m away</span>` : ''}
         </div>
         <div class="building-image">
-          <img src="${b.imageUrl || './2d/placeholder.jpg'}" 
-              alt="${b.name}" 
-              onerror="this.src='./2d/placeholder.jpg'">
+          <img src="${b.mask}" alt="${b.name}">
         </div>
       </div>
     `;
