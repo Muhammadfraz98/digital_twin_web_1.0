@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('start-ar-back').addEventListener('click', function() {
     document.getElementById('building-list-screen').classList.add('hidden');
     document.getElementById('enter-ar-info').style.display = 'block';
+    document.getElementById('splash-image').style.display = 'block';
+    document.body.classList.remove("ar");
   });
 });
 
