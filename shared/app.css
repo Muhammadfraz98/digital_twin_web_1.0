@@ -133,7 +133,7 @@ body.ar.stabilized #stabilization {
   padding: 20px;
 }
 
-#building-list div {
+#building-list .building-card {
   padding: 12px;
   border: 1px solid #ccc;
   margin-bottom: 8px;
