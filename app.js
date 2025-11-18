@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('start-ar-back').addEventListener('click', function() {
     document.getElementById('building-list-screen').classList.add('hidden');
     document.getElementById('enter-ar-info').style.display = 'block';
-    document.getElementById('splash-image').style.display = 'block';
     document.body.classList.remove("ar");
   });
 });
@@ -82,7 +81,6 @@ class App {
 
   onSessionStarted = async () => {
     // Add the `ar` class to our body, which will hide our 2D components
-    document.getElementById('splash-image').style.display = 'none';
     document.body.classList.add('ar');
 
     // To help with working with 3D on the web, we'll use three.js.
@@ -205,7 +203,6 @@ class App {
 
 
 async function showBuildingListScreen() {
-  document.getElementById("splash-image").style.display = "none";
   document.getElementById("enter-ar-info").style.display = "none";
 
   const screen = document.getElementById("building-list-screen");
