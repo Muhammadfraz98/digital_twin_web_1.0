@@ -123,3 +123,18 @@ body.ar.stabilized #stabilization {
 
 #wrong-hosting-root { display: none; }
  
+
+.hidden {
+  display: none;
+}
+
+.screen {
+  padding: 20px;
+}
+
+#building-list div {
+  padding: 12px;
+  border: 1px solid #ccc;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}

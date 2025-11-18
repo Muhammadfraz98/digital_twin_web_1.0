@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building an augmented reality application with the WebXR Device API</title>
+  <title>Building an AR app with the WebXR Device API</title>
   <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
   <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 
@@ -12,18 +12,29 @@
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <link rel="stylesheet" type="text/css" href="../shared/app.css" />
+
+  <!-- Utils (Reticle, DemoUtils, preloadAllModels) -->
   <script src="../shared/utils.js"></script>
+
+  <!-- Firebase config and fetch -->
+  <script src="./firebase.js"></script>
+
+  <!-- App logic (calls preloadAllModels) -->
+  <script src="./app.js"></script>
 </head>
 
 <body>
   <div id="splash-image">
     <img src="./2d/bamberg_splash.jpg" alt="Bamberg Logo">
   </div>
+
   <div id="enter-ar-info" class="main-card demo-card">
     <h2>See the AR view of Old Bamberg</h2>
-
-    <!-- Starting an immersive WebXR session requires user interaction. Start the WebXR experience with a simple button. -->
     <a id="enter-ar" class="mdc-button mdc-button--raised mdc-button--accent">
       Explore Bamberg
     </a>
@@ -31,11 +42,19 @@
 
   <div id="unsupported-info" class="mdc-card demo-card">
     <h2>Unsupported Browser</h2>
-    <p>
-      Your browser does not support AR features with WebXR.
-    </p>
+    <p>Your browser does not support AR features with WebXR.</p>
   </div>
-  <script src="app.js"></script>
+
+  <div id="building-list-screen" class="screen hidden">
+    <header>
+      <h2>Nearby Buildings</h2>
+      <p id="user-location">Loading location...</p>
+    </header>
+
+    <div id="building-list"></div>
+    <button id="start-ar-back" class="mdc-button">Back</button>
+  </div>
+
   <div id="stabilization"></div>
 </body>
 

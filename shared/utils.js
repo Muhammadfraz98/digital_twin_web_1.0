@@ -1,41 +1,68 @@
-
 window.gltfLoader = new THREE.GLTFLoader();
-
+window.models = {};
 
 class Reticle extends THREE.Object3D {
   constructor() {
     super();
-
-    this.loader = new THREE.GLTFLoader();
-    this.loader.load("https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf", (gltf) => {
-      this.add(gltf.scene);
-    })
-
     this.visible = false;
+    
+    this.loader = new THREE.GLTFLoader();
+    this.loader.load(
+      "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf", 
+      (gltf) => {
+        this.add(gltf.scene);
+        // Optional: Add any reticle-specific setup here
+      },
+      undefined,
+      (error) => {
+        console.error("Error loading reticle:", error);
+      }
+    );
   }
 }
 
-// https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf
+// Load ALL static models at once
+async function preloadAllModels() {
+  const urls = {
+    alteRathaus: "https://bambergwebar.netlify.app/3d/alteRathaus.glb",
+    bohnlein: "https://bambergwebar.netlify.app/3d/bohnlein.glb",
+    fileman: "https://bambergwebar.netlify.app/3d/fileman.glb",
+    olymp: "https://bambergwebar.netlify.app/3d/olymp.glb"
+  };
 
-window.gltfLoader.load("https://bambergwebar.netlify.app/3d/alteRathaus.glb", function(gltf) {
-    const model = gltf.scene;
-    model.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
+  const loader = window.gltfLoader;
 
-    model.scale.set(0.05, 0.05, 0.05);
-    window.myModel = model;  
-  },
-  undefined,
-  function(error) {
-    console.error("Error loading GLB:", error);
+  window.models = window.models || {};
+
+  try {
+    for (const key in urls) {
+      await new Promise((resolve, reject) => {
+        loader.load(
+          urls[key], 
+          (gltf) => {
+            const model = gltf.scene;
+            model.traverse(c => {
+              if (c.isMesh) { 
+                c.castShadow = true; 
+                c.receiveShadow = true; 
+              }
+            });
+            model.scale.set(0.05, 0.05, 0.05);
+            model.visible = false; // Hide until placed
+            window.models[key] = model;
+            resolve();
+          }, 
+          undefined, 
+          reject
+        );
+      });
+    }
+    console.log("All models loaded successfully");
+  } catch (error) {
+    console.error("Error preloading models:", error);
   }
-);
-
-
+}
+ 
 
 window.DemoUtils = {
   /**

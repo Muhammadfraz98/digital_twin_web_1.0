@@ -1,12 +1,41 @@
+// Utility functions
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function onNoXRDevice() {
+  document.body.classList.add('unsupported');
+}
 
 (async function() {
+  await preloadAllModels(); 
+
   const isArSessionSupported = navigator.xr && navigator.xr.isSessionSupported && await navigator.xr.isSessionSupported("immersive-ar");
   if (isArSessionSupported) {
-    document.getElementById("enter-ar").addEventListener("click", window.app.activateXR)
+    //document.getElementById("enter-ar").addEventListener("click", window.app.activateXR);
+    document.getElementById("enter-ar").addEventListener("click", showBuildingListScreen);
   } else {
     onNoXRDevice();
   }
 })();
+
+
+// Back button handler
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('start-ar-back').addEventListener('click', function() {
+    document.getElementById('building-list-screen').classList.add('hidden');
+    document.getElementById('enter-ar-info').style.display = 'block';
+  });
+});
+
 
 /**
  * Container class to manage connecting to the WebXR Device API
@@ -76,7 +105,7 @@ class App {
     
     if (this.modelPlaced) return;
 
-    let modelToPlace = window.myModel || window.sunflower; // prioritize your GLB
+    const modelToPlace = window.selectedModel;  
 
     if (modelToPlace && this.reticle.visible) {
         const clone = modelToPlace.clone();
@@ -170,5 +199,69 @@ class App {
     this.camera.matrixAutoUpdate = false;
   }
 };
+
+
+
+async function showBuildingListScreen() {
+  document.getElementById("splash-image").style.display = "none";
+  document.getElementById("enter-ar-info").style.display = "none";
+
+  const screen = document.getElementById("building-list-screen");
+  screen.classList.remove("hidden");
+
+  // get user location
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    document.getElementById("user-location").innerText =
+      `Your Location: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+
+    // fetch from firebase
+    const buildings = await fetchBuildingsFromFirebase();
+
+    // filter by distance (100m radius example)
+    const NEARBY_RADIUS = 100;
+    const nearby = buildings.filter(b => 
+      getDistance(lat, lon, b.lat, b.lon) <= NEARBY_RADIUS
+    );
+
+    showBuildings(nearby);
+  });
+}
+
+
+// render list
+function showBuildings(buildings) {
+  const list = document.getElementById("building-list");
+  list.innerHTML = "";
+
+  buildings.forEach(b => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <strong>${b.name}</strong><br>
+      ${b.lat}, ${b.lon} 
+    `;
+
+    div.addEventListener("click", () => startARForBuilding(b));
+    list.appendChild(div);
+  });
+}
+
+async function startARForBuilding(building) {
+  console.log("Selected building:", building);
+  window.selectedModel = window.models[b.modelKey]; 
+
+  if (!window.selectedModel) {
+    console.error("Model not found:", building.modelKey);
+    alert("Model not loaded. Please try again.");
+    return;
+  }
+ 
+  document.getElementById("building-list-screen").classList.add("hidden");
+  // Start AR session
+  await window.app.activateXR();
+
+}
 
 window.app = new App();
