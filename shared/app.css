@@ -1,19 +1,26 @@
 
 body {
-  font-family: monospace;
+ font-family: monospace;
   margin: 0;
+  padding: 0;
   overflow: hidden;
   position: fixed;
   width: 100%;
   height: 100vh;
   -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
- 
   color: #f5deb3;
 
-  background-image: url('../2d/bamberg_screen_bg.jpg');
-  background-repeat: no-repeat;
+  /* Background properties */
+  background: url('../2d/bamberg_screen_bg.jpg') no-repeat center center fixed;
   background-size: cover;
+
+  /* Fallback for older browsers */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; 
 }
 
 div.demo-card {
