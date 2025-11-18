@@ -211,25 +211,48 @@ async function showBuildingListScreen() {
   const screen = document.getElementById("building-list-screen");
   screen.classList.remove("hidden");
 
+  // Show loading state
+  document.getElementById("user-location").innerText = "Getting your location...";
+
   // get user location
   navigator.geolocation.getCurrentPosition(async (pos) => {
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
+    
 
     document.getElementById("user-location").innerText =
       `Your Location: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
 
+      
     // fetch from firebase
     const buildings = await fetchBuildingsFromFirebase();
+    console.log("Fetched buildings:", buildings);
+
+    if (buildings.length === 0) {
+      document.getElementById("building-list").innerHTML = "No buildings found in database.";
+        return;
+    }
 
     // filter by distance (100m radius example)
     const NEARBY_RADIUS = 100;
     const nearby = buildings.filter(b => 
       getDistance(lat, lon, b.lat, b.lon) <= NEARBY_RADIUS
     );
-
+    console.log("Nearby buildings:", nearby);  
+    showBuildings(nearby.length > 0 ? nearby : buildings);
+    
     showBuildings(nearby);
-  });
+    
+  }, (error) => {
+      console.error("Geolocation error:", error);
+      document.getElementById("user-location").innerText = "Location access denied. Showing all buildings.";
+      
+      // Show all buildings if location fails
+      fetchBuildingsFromFirebase().then(buildings => {
+        showBuildings(buildings);
+      });
+    }
+  );
 }
 
 
@@ -252,7 +275,7 @@ function showBuildings(buildings) {
 
 async function startARForBuilding(building) {
   console.log("Selected building:", building);
-  window.selectedModel = window.models[b.modelKey]; 
+  window.selectedModel = window.models[building.modelKey]; 
 
   if (!window.selectedModel) {
     console.error("Model not found:", building.modelKey);
