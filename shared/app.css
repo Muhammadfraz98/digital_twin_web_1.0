@@ -8,8 +8,12 @@ body {
   height: 100vh;
   -webkit-user-select: none;
   user-select: none;
-  background-color: rgb(0 0 0);
+ 
   color: #f5deb3;
+
+  background-image: url('../2d/bamberg_screen_bg.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 div.demo-card {
@@ -138,6 +142,7 @@ body.ar.stabilized #stabilization {
   border: 1px solid #ccc;
   margin-bottom: 8px;
   border-radius: 4px;
+  background: #000000ba;
 }
 
 
