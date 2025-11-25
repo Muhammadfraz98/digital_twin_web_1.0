@@ -16,21 +16,23 @@ function onNoXRDevice() {
 }
 
 document.addEventListener("DOMContentLoaded",  async function() {
-  document.getElementById("enter-ar").innerText = "Loading AR...";
-  document.getElementById("enter-ar").disabled = true;
+  let enterArButton = document.getElementById("enter-ar");
+  enterArButton.innerText = "Loading AR...";
+  enterArButton.disabled = true;
   await preloadAllModels(); 
 
   const isArSessionSupported = navigator.xr && navigator.xr.isSessionSupported && await navigator.xr.isSessionSupported("immersive-ar");
   if (isArSessionSupported) {
     //document.getElementById("enter-ar").addEventListener("click", window.app.activateXR);
-    document.getElementById("enter-ar").disabled = false;
-    document.getElementById("enter-ar").addEventListener("click", showBuildingListScreen);
+    enterArButton.innerText = "Explore Bamberg";
+    enterArButton.disabled = false;
+    enterArButton.addEventListener("click", showBuildingListScreen);
 
   } else {
     onNoXRDevice();
      // Keep button disabled if no AR support
-     document.getElementById("enter-ar").disabled = true;
-     document.getElementById("enter-ar").innerText = "No AR support";
+     enterArButton.disabled = true;
+     enterArButton.innerText = "No AR support";
   }
 });
 
