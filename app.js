@@ -15,50 +15,14 @@ function onNoXRDevice() {
   document.body.classList.add('unsupported');
 }
 
-  // Create loading element function
-  function createLoadingElement() {
-    const loader = document.createElement('div');
-    loader.id = 'loading-message';
-    loader.innerHTML = 'Loading 3D models...';
-    loader.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 1000;
-    `;
-    document.body.appendChild(loader);
-    return loader;
-  }
+
 
 (async function() {
-
-
-  let loadingMessage;
-
-  // Check if loading element already exists, otherwise create it
-  if (!document.getElementById('loading-message')) {
-    loadingMessage = createLoadingElement();
-  } else {
-    loadingMessage = document.getElementById('loading-message');
-  }
-
-  // Hide loading message
-  loadingMessage.style.display = 'none';
-
-    if (enterArButton) {
-    enterArButton.disabled = true;
-  }
-  loadingMessage.style.display = 'block';
+  let enterArButton = document.getElementById("enter-ar");
+  enterArButton.disabled = true; 
+  enterArButton.innerText = "Loading app...";
 
   await preloadAllModels(); 
-
-    // Hide loading message
-    loadingMessage.style.display = 'none';
 
   const isArSessionSupported = navigator.xr && navigator.xr.isSessionSupported && await navigator.xr.isSessionSupported("immersive-ar");
   if (isArSessionSupported) {
@@ -67,6 +31,7 @@ function onNoXRDevice() {
           
     // Enable button and add event listener
       enterArButton.disabled = false;
+      enterArButton.innerText = "Explore Bamberg!";
       enterArButton.addEventListener("click", showBuildingListScreen);
 
   } else {
