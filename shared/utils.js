@@ -20,7 +20,9 @@ class Reticle extends THREE.Object3D {
     const reticle = new THREE.Mesh(geometry, material);
 
     // Make the plane to stand up straight
-    reticle.rotation.x = 0;
+reticle.rotation.y = camera.rotation.y; // Only follow horizontal camera rotation
+reticle.rotation.x = 0; // Stay upright
+reticle.rotation.z = 0; // No roll
 
     // Add plane to this Reticle object
     this.add(reticle);
