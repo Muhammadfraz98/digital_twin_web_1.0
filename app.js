@@ -15,9 +15,7 @@ function onNoXRDevice() {
   document.body.classList.add('unsupported');
 }
 
-
-
-(async function() {
+document.addEventListener("DOMContentLoaded",  async function() {
   document.getElementById("enter-ar").innerText = "Loading AR...";
   document.getElementById("enter-ar").disabled = true;
   await preloadAllModels(); 
@@ -34,8 +32,7 @@ function onNoXRDevice() {
      document.getElementById("enter-ar").disabled = true;
      document.getElementById("enter-ar").innerText = "No AR support";
   }
-})();
-
+});
 
 // Back button handler
 document.addEventListener('DOMContentLoaded', function() {
