@@ -8,7 +8,8 @@ class Reticle extends THREE.Object3D {
     
     this.loader = new THREE.GLTFLoader();
     this.loader.load(
-      "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf", 
+      //https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf
+      "https://bambergwebar.netlify.app/2d/alteRathaus_mask.png", 
       (gltf) => {
         this.add(gltf.scene);
         // Optional: Add any reticle-specific setup here
