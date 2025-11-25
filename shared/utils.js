@@ -19,8 +19,8 @@ class Reticle extends THREE.Object3D {
     const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
     const reticle = new THREE.Mesh(geometry, material);
 
-    // Rotate plane to lie flat on ground
-    reticle.rotation.x = -Math.PI / 2;
+    // Make the plane to stand up straight
+    reticle.rotation.x = 0;
 
     // Add plane to this Reticle object
     this.add(reticle);
@@ -50,7 +50,7 @@ class Reticle extends THREE.Object3D {
 
     this.visible = true;
   }
-  
+
 }
 
 // Load ALL static models at once
