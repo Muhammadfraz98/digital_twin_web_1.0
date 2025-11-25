@@ -10,6 +10,11 @@ class Reticle extends THREE.Object3D {
     const geometry = new THREE.PlaneGeometry(0.5, 0.5);
     const material = new THREE.MeshBasicMaterial({ transparent: true });
     this.reticleMesh = new THREE.Mesh(geometry, material);
+    // Set initial default rotation (before hit-test positions it)
+    this.reticleMesh.rotation.x = 0; 
+    this.reticleMesh.rotation.y = 0;
+    this.reticleMesh.rotation.z = 0;
+
     this.add(this.reticleMesh);
 
     // Load initial mask
