@@ -6,19 +6,51 @@ class Reticle extends THREE.Object3D {
     super();
     this.visible = false;
     
-    this.loader = new THREE.GLTFLoader();
-    this.loader.load(
-      "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf", 
-      (gltf) => {
-        this.add(gltf.scene);
-        // Optional: Add any reticle-specific setup here
-      },
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load(
+      "https://bambergwebar.netlify.app/2d/alteRathaus_mask.png",
+      () => console.log("Reticle texture loaded"),
       undefined,
-      (error) => {
-        console.error("Error loading reticle:", error);
-      }
+      (error) => console.error("Error loading reticle texture:", error)
     );
+
+    // Create a plane geometry and apply the texture
+    const geometry = new THREE.PlaneGeometry(0.5, 0.5); // adjust size
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    const reticle = new THREE.Mesh(geometry, material);
+
+    // Rotate plane to lie flat on ground
+    reticle.rotation.x = -Math.PI / 2;
+
+    // Add plane to this Reticle object
+    this.add(reticle);
+    this.reticleMesh = reticle;
+
+    // this.loader = new THREE.GLTFLoader();
+    // this.loader.load(
+    //   "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf", 
+    //   (gltf) => {
+    //     this.add(gltf.scene);
+    //     // Optional: Add any reticle-specific setup here
+    //   },
+    //   undefined,
+    //   (error) => {
+    //     console.error("Error loading reticle:", error);
+    //   }
+    // );
   }
+
+   updatePosition(position, normal) {
+    this.position.copy(position);
+
+    // Align with surface normal
+    const up = new THREE.Vector3(0, 1, 0);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(up, normal);
+    this.quaternion.copy(quaternion);
+
+    this.visible = true;
+  }
+  
 }
 
 // Load ALL static models at once
