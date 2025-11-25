@@ -197,7 +197,7 @@ class App {
 
     // Initialize our demo scene.
     this.scene = DemoUtils.createLitScene();
-    this.reticle = new Reticle();
+    this.reticle = new Reticle(window.selectedMaskURL);
     this.scene.add(this.reticle);
 
     // We'll update the camera matrices directly from API, so
@@ -293,6 +293,7 @@ function showBuildings(buildings) {
 async function startARForBuilding(building) {
   console.log("Selected building:", building);
   window.selectedModel = window.models[building.modelKey]; 
+  window.selectedMaskURL = building.mask;
 
   if (!window.selectedModel) {
     console.error("Model not found:", building.modelKey);

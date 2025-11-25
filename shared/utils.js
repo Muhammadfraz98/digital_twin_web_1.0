@@ -2,23 +2,21 @@ window.gltfLoader = new THREE.GLTFLoader();
 window.models = {};
 
 class Reticle extends THREE.Object3D {
-  constructor(initialMaskURL = "https://bambergwebar.netlify.app/2d/alteRathaus_mask.png") {
+  constructor(initialMaskURL = null) {
     super();
     this.visible = false;
+    this.alignToSurface = false; 
 
     // Plane geometry for reticle
     const geometry = new THREE.PlaneGeometry(0.5, 0.5);
     const material = new THREE.MeshBasicMaterial({ transparent: true });
     this.reticleMesh = new THREE.Mesh(geometry, material);
-    // Set initial default rotation (before hit-test positions it)
-    this.reticleMesh.rotation.x = 0; 
-    this.reticleMesh.rotation.y = 0;
-    this.reticleMesh.rotation.z = 0;
-
     this.add(this.reticleMesh);
-
+    this.reticleMesh.rotation.set(0, 0, 0);
     // Load initial mask
-    this.setMask(initialMaskURL);
+    if (initialMaskURL) {
+      this.setMask(initialMaskURL);
+    }
   }
 
   
@@ -39,51 +37,19 @@ class Reticle extends THREE.Object3D {
 
   updatePosition(position, normal) {
     this.position.copy(position);
-    const up = new THREE.Vector3(0, 1, 0);
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(up, normal);
-    this.quaternion.copy(quaternion);
+    
+    if (this.alignToSurface) {
+      const up = new THREE.Vector3(0, 1, 0);
+      const q = new THREE.Quaternion().setFromUnitVectors(up, normal);
+      this.quaternion.copy(q);
+    } else {
+      // keep upright & facing camera
+      this.rotation.set(0, this.rotation.y, 0);
+    }
+
     this.visible = true;
   }
 
-  // constructor() {
-  //   super();
-  //   this.visible = false;
-    
-  //   const textureLoader = new THREE.TextureLoader();
-  //   const texture = textureLoader.load(
-  //     "https://bambergwebar.netlify.app/2d/alteRathaus_mask.png",
-  //     () => console.log("Reticle texture loaded"),
-  //     undefined,
-  //     (error) => console.error("Error loading reticle texture:", error)
-  //   );
-
-  //   // Create a plane geometry and apply the texture
-  //   const geometry = new THREE.PlaneGeometry(0.5, 0.5); // adjust size
-  //   const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-  //   const reticle = new THREE.Mesh(geometry, material);
-
-  //   // Make the plane to stand up straight
-  //   reticle.rotation.y = 0  
-  //   reticle.rotation.x = 0;  
-  //   reticle.rotation.z = 0;  
-
-  //   // Add plane to this Reticle object
-  //   this.add(reticle);
-  //   this.reticleMesh = reticle;
-
-  //   // this.loader = new THREE.GLTFLoader();
-  //   // this.loader.load(
-  //   //   "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf", 
-  //   //   (gltf) => {
-  //   //     this.add(gltf.scene);
-  //   //     // Optional: Add any reticle-specific setup here
-  //   //   },
-  //   //   undefined,
-  //   //   (error) => {
-  //   //     console.error("Error loading reticle:", error);
-  //   //   }
-  //   // );
-  // }
 }
 
 // Load ALL static models at once
@@ -208,6 +174,7 @@ function onNoXRDevice() {
 
 
 function onModelSelected(modelKey) {
+  console.log("Model selected:", modelKey);
   const maskMap = {
     alteRathaus: "https://bambergwebar.netlify.app/2d/alteRathaus_mask.png",
     bohnlein: "https://bambergwebar.netlify.app/2d/bohnlein_mask.png",
@@ -215,11 +182,13 @@ function onModelSelected(modelKey) {
     olymp: "https://bambergwebar.netlify.app/2d/olymp_mask.png"
   };
 
-  const maskURL = maskMap[modelKey];
-  if (window.app.reticle) {
-    window.app.reticle.setMask(maskURL);
+  window.selectedMaskURL = maskMap[modelKey]; 
+  window.selectedModel = window.models[modelKey];
+
+  console.log("Selected:", modelKey, "Mask:", window.selectedMaskURL);
+
+  if (window.app?.reticle) {
+    window.app.reticle.setMask(window.selectedMaskUR);
   }
 
-  window.selectedModel = window.models[modelKey];
-  console.log("Selected model:", modelKey);
 }
