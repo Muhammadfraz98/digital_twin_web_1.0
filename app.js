@@ -19,6 +19,8 @@ function onNoXRDevice() {
 
 (async function() {
   let enterArButton = document.getElementById("enter-ar");
+  if (!enterArButton) return;
+  
   enterArButton.disabled = true; 
   enterArButton.innerText = "Loading app...";
 
